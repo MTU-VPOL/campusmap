@@ -1,0 +1,207 @@
+<html>
+
+<head>
+  <script type="module" src="https://cdn.jsdelivr.net/npm/@ionic/core/dist/ionic/ionic.esm.js"></script>
+  <script nomodule src="https://cdn.jsdelivr.net/npm/@ionic/core/dist/ionic/ionic.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@ionic/core/css/ionic.bundle.css" />
+  <link rel="stylesheet" href="https://js.arcgis.com/4.28/esri/themes/light/main.css" />
+  <script src="https://code.jquery.com/jquery-3.5.1.js" integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc=" crossorigin="anonymous"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"/>
+  <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+  <script src="https://js.arcgis.com/4.28/"></script>
+
+  <script>
+    window.Ionic = {
+      config: {
+        mode: 'ios'
+      }
+    }
+  </script>
+</head>
+
+  <style>
+      
+      #viewDiv {
+        text-align: center;
+        height: 100%;
+        width: 100%;
+        position: absolute;
+        left: 0;
+        right: 0;       
+      }
+      ion-range {
+        position: absolute;
+        top: 5px;
+        left: 90px;
+        width:70%;
+      }
+
+      swiper {
+      width: 100%;
+      height: 100%;
+    }
+
+    .swiper-slide {
+      text-align: center;
+      font-size: 18px;
+      background: #fff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .swiper-slide img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .swiper-slide {
+      width: 80%;
+    }
+
+    .swiper-slide:nth-child(2n) {
+      width: 60%;
+    }
+
+    .swiper-slide:nth-child(3n) {
+      width: 40%;
+    }
+</style>
+
+<body>
+  <ion-app>
+    <ion-header>
+  <ion-toolbar>
+    <ion-title>MTU Campus History Project Demo</ion-title>
+  </ion-toolbar>
+</ion-header>
+<ion-content>  
+  <ion-range value="100" mode="ios"></ion-range>
+  <div id="viewDiv"></div>
+</ion-content>
+
+<ion-footer>
+  <ion-toolbar>
+    <ion-title>Footer Toolbar</ion-title>
+    <!-- Slider main container -->
+<div class="swiper mySwiper">
+  <!-- Additional required wrapper -->
+  <div class="swiper-wrapper">
+    <!-- Slides -->
+    <div class="swiper-slide">
+
+      <ion-card>
+        <img alt="Silhouette of mountains" style="width: 500px; height: 200px;" src="https://cchi.mtu.edu/system/files/styles/archives_watermark_test/private/d3b52f52-ce73-4475-812f-684f45cc54d5?itok=UNgJP5PY" />
+        <ion-card-header>
+          <ion-card-title>1954</ion-card-title>
+          <ion-card-subtitle>MTU CAMPUS</ion-card-subtitle>
+        </ion-card-header>
+  <ion-card-content>
+    Here's a small text description for how the MTU Campus changed in 1954.
+  </ion-card-content>
+</ion-card>
+</div>
+    <div class="swiper-slide">
+      <ion-card>
+        <img alt="Silhouette of mountains" style="width: 500px; height: 200px;" src="https://cchi.mtu.edu/system/files/styles/archives_watermark_test_reduced/private/547222f2-cc4b-4a48-a1a7-f1081fc99889?itok=4f8bo_v7" />
+  <ion-card-header>
+    <ion-card-title>1965</ion-card-title>
+    <ion-card-subtitle>MTU Campus</ion-card-subtitle>
+  </ion-card-header>
+
+  <ion-card-content>
+    Here's a small text description for how the MTU Campus changed in 1965.
+  </ion-card-content>
+</ion-card>
+    </div>
+    <div class="swiper-slide">Slide 3</div>
+    ...
+  </div>
+  <!-- If we need pagination -->
+  <div class="swiper-pagination"></div>
+
+  <!-- If we need navigation buttons -->
+  <div class="swiper-button-prev"></div>
+  <div class="swiper-button-next"></div>
+
+  <!-- If we need scrollbar -->
+  <div class="swiper-scrollbar"></div>
+</div>    
+  </ion-toolbar>
+</ion-footer>
+  </ion-app>
+</body>
+<script>
+
+    <!-- Initialize Swiper -->
+    var swiper = new Swiper(".mySwiper", {
+      slidesPerView: "auto",
+      spaceBetween: 30,
+      navigation: {
+        nextEl: ".swiper-button-next",
+        prevEl: ".swiper-button-prev",
+      },
+      pagination: {
+        el: ".swiper-pagination",
+        clickable: true,
+      },
+    });
+
+  require(["esri/Map", "esri/views/MapView", "esri/layers/TileLayer", "esri/layers/FeatureLayer"], (Map, MapView, TileLayer, FeatureLayer) => {
+  // add campus layers
+  const campus1965 = new TileLayer({
+    url: "https://portal1-geo.sabu.mtu.edu/server/rest/services/Hosted/mtu1955/MapServer"
+  }); 
+
+  // Create the Map
+  const map = new Map({
+    basemap: "satellite",
+    layers: [campus1965]
+  });
+
+  // Create the MapView
+  const view = new MapView({
+    center: [-88.5433574, 47.1166716],
+    zoom: 15,
+    container: "viewDiv",
+    map: map
+  });
+
+  // Removes the zoom widget from the view
+  view.ui.remove("zoom"); 
+
+  // use the range slider to change the opacity of overlay maps
+  const range = document.querySelector('ion-range');
+
+  // get range value of the opacity slider   
+  let rangeVal = $( "ion-range" ).val();
+  campus1965.opacity = rangeVal / 100;
+  range.addEventListener('ionInput', ({ detail }) => {                     
+    campus1965.opacity = detail.value / 100;                  
+  });
+
+  const swiper = document.querySelector('.swiper').swiper;
+  const index = swiper.activeIndex;
+   let current_layer = new TileLayer({               
+                  });
+  swiper.on('slideChange', function () {
+    map.allLayers.filter(function(layer) {
+      if (layer.type === "tile") {
+        map.remove(layer);
+      } 
+    }); 
+   console.log('slide changed', swiper.activeIndex);
+   if (index == 0) {
+
+
+  }
+
+});
+
+
+
+});
+</script>
+</html>
