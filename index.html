@@ -183,10 +183,11 @@
   });
 
   const swiper = document.querySelector('.swiper').swiper;
-  const index = swiper.activeIndex;
-   let current_layer = new TileLayer({               
-                  });
+  
+  let current_layer;  
+
   swiper.on('slideChange', function () {
+    const index = swiper.activeIndex;
     map.allLayers.filter(function(layer) {
       if (layer.type === "tile") {
         map.remove(layer);
@@ -194,9 +195,22 @@
     }); 
    console.log('slide changed', swiper.activeIndex);
    if (index == 0) {
+    current_layer = new TileLayer({
+      url: "https://portal1-geo.sabu.mtu.edu/server/rest/services/Hosted/mtu1955/MapServer"
+    });
 
+    map.add(current_layer);
+    
+   } else if ( index == 1) {
 
-  }
+    current_layer = new TileLayer({
+    url: "https://portal1-geo.sabu.mtu.edu/server/rest/services/Hosted/mtu1965/MapServer"
+    });
+    console.log("index1");
+    map.add(current_layer);
+   }
+
+   
 
 });
 
