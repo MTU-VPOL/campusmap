@@ -33,6 +33,15 @@
       top: 5px;
       left: 10%;
       width:70%;
+        --knob-box-shadow:  0 3px 1px rgba(0, 0, 0, 0.1), 0 4px 8px rgba(0, 0, 0, 0.13), 0 0 0 1px rgba(0, 0, 0, 0.02);
+        --bar-background: #83A1A0;
+        --bar-background-active: #d7d8da;
+        --bar-height: 8px;
+        --bar-border-radius: 8px;
+        --knob-background: #ffffff;
+        --knob-size: 40px;
+        --pin-background: #ffafcc;
+        --pin-color: #fff; 
     }
 
     swiper {
@@ -80,7 +89,7 @@
   </ion-toolbar>
 </ion-header>
 <ion-content>  
-  <ion-range value="100" mode="ios"></ion-range>
+  <ion-range value="100"></ion-range>
   <div id="viewDiv"></div>
 </ion-content>
 
