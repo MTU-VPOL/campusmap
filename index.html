@@ -19,24 +19,23 @@
   </script>
 </head>
 
-  <style>
-      
-      #viewDiv {
-        text-align: center;
-        height: 100%;
-        width: 100%;
-        position: absolute;
-        left: 0;
-        right: 0;       
-      }
-      ion-range {
-        position: absolute;
-        top: 5px;
-        left: 90px;
-        width:70%;
-      }
+  <style>      
+    #viewDiv {
+      text-align: center;
+      height: 100%;
+      width: 100%;
+      position: absolute;
+      left: 0;
+      right: 0;       
+    }
+    ion-range {
+      position: absolute;
+      top: 5px;
+      left: 10%;
+      width:70%;
+    }
 
-      swiper {
+    swiper {
       width: 100%;
       height: 100%;
     }
@@ -62,7 +61,7 @@
     }
 
     .swiper-slide:nth-child(2n) {
-      width: 60%;
+      width: 80%;
     }
 
     .swiper-slide:nth-child(3n) {
@@ -74,6 +73,9 @@
   <ion-app>
     <ion-header>
   <ion-toolbar>
+     <ion-buttons slot="start">
+            <ion-img src="images/husky.svg" style="width: 40px; height: 50px;"></ion-img>
+          </ion-buttons>
     <ion-title>MTU Campus History Project Demo</ion-title>
   </ion-toolbar>
 </ion-header>
@@ -84,7 +86,7 @@
 
 <ion-footer>
   <ion-toolbar>
-    <ion-title>Footer Toolbar</ion-title>
+    <!-- <ion-title>Footer Toolbar</ion-title> -->
     <!-- Slider main container -->
 <div class="swiper mySwiper">
   <!-- Additional required wrapper -->
@@ -105,7 +107,7 @@
 </div>
     <div class="swiper-slide">
       <ion-card>
-        <img alt="Silhouette of mountains" style="width: 500px; height: 200px;" src="https://cchi.mtu.edu/system/files/styles/archives_watermark_test_reduced/private/547222f2-cc4b-4a48-a1a7-f1081fc99889?itok=4f8bo_v7" />
+        <img alt="Silhouette of mountains" style="width: 500px; height: 200px;" src="https://cchi.mtu.edu/system/files/styles/archives_watermark_test/private/d3b52f52-ce73-4475-812f-684f45cc54d5?itok=UNgJP5PY" />
   <ion-card-header>
     <ion-card-title>1965</ion-card-title>
     <ion-card-subtitle>MTU Campus</ion-card-subtitle>
@@ -120,14 +122,14 @@
     ...
   </div>
   <!-- If we need pagination -->
-  <div class="swiper-pagination"></div>
+  <!-- <div class="swiper-pagination"></div> -->
 
   <!-- If we need navigation buttons -->
   <div class="swiper-button-prev"></div>
   <div class="swiper-button-next"></div>
 
   <!-- If we need scrollbar -->
-  <div class="swiper-scrollbar"></div>
+  <!-- <div class="swiper-scrollbar"></div> -->
 </div>    
   </ion-toolbar>
 </ion-footer>
@@ -150,72 +152,96 @@
     });
 
   require(["esri/Map", "esri/views/MapView", "esri/layers/TileLayer", "esri/layers/FeatureLayer"], (Map, MapView, TileLayer, FeatureLayer) => {
-  // add campus layers
-  const campus1965 = new TileLayer({
-    url: "https://portal1-geo.sabu.mtu.edu/server/rest/services/Hosted/mtu1955/MapServer"
-  }); 
+    // tile layer that is currently visible on the map  
+    let current_layer; 
 
-  // Create the Map
-  const map = new Map({
-    basemap: "satellite",
-    layers: [campus1965]
-  });
+     // renderer for the geoheritage reflections layer
+    const renderer = {
+     type: "simple",
+     symbol: {
+        type: "picture-marker",
+        url: 'images/camera.png',
+        width: 20,
+        height: 20
+     }
+    }
 
-  // Create the MapView
-  const view = new MapView({
-    center: [-88.5433574, 47.1166716],
-    zoom: 15,
-    container: "viewDiv",
-    map: map
-  });
-
-  // Removes the zoom widget from the view
-  view.ui.remove("zoom"); 
-
-  // use the range slider to change the opacity of overlay maps
-  const range = document.querySelector('ion-range');
-
-  // get range value of the opacity slider   
-  let rangeVal = $( "ion-range" ).val();
-  campus1965.opacity = rangeVal / 100;
-  range.addEventListener('ionInput', ({ detail }) => {                     
-    campus1965.opacity = detail.value / 100;                  
-  });
-
-  const swiper = document.querySelector('.swiper').swiper;
-  
-  let current_layer;  
-
-  swiper.on('slideChange', function () {
-    const index = swiper.activeIndex;
-    map.allLayers.filter(function(layer) {
-      if (layer.type === "tile") {
-        map.remove(layer);
-      } 
-    }); 
-   console.log('slide changed', swiper.activeIndex);
-   if (index == 0) {
+    function setFeatureLayerFilter(expression) {
+      photos_layer.definitionExpression = expression;  
+    }
+      
+    // this is the campus map layer visible on app load
     current_layer = new TileLayer({
       url: "https://portal1-geo.sabu.mtu.edu/server/rest/services/Hosted/mtu1955/MapServer"
+    }); 
+
+    // this is the campus map layer visible on app load
+    photos_layer = new FeatureLayer({
+      url: "https://services2.arcgis.com/RPhrOu9XQzI31xTa/arcgis/rest/services/Historic_Campus_Photographs/FeatureServer/0",
+      renderer: renderer // specify the render created above
+    }); 
+
+    // Create the Map
+    const map = new Map({
+      basemap: "satellite",
+      layers: [current_layer, photos_layer]
     });
 
-    map.add(current_layer);
-    
-   } else if ( index == 1) {
-
-    current_layer = new TileLayer({
-    url: "https://portal1-geo.sabu.mtu.edu/server/rest/services/Hosted/mtu1965/MapServer"
+    // Create the MapView
+    const view = new MapView({
+      center: [-88.5433574, 47.1166716],
+      zoom: 15,
+      container: "viewDiv",
+      map: map
     });
-    console.log("index1");
-    map.add(current_layer);
-   }
 
-   
+    // Removes the zoom widget from the view
+    view.ui.remove("zoom"); 
 
-});
+    // use the range slider to change the opacity of overlay maps
+    const range = document.querySelector('ion-range');    
 
+    // get range value of the opacity slider   
+    let rangeVal = $( "ion-range" ).val();
+    current_layer.opacity = rangeVal / 100;
+    range.addEventListener('ionInput', ({ detail }) => {                     
+      current_layer.opacity = detail.value / 100; 
+      console.log(detail.value);                 
+    });
 
+    const swiper = document.querySelector('.swiper').swiper;   
 
+    swiper.on('slideChange', function () {
+
+      current_layer.opacity = rangeVal / 100;
+      const index = swiper.activeIndex;
+      map.allLayers.filter(function(layer) {
+        if (layer.type === "tile") {
+          map.remove(layer);
+        } 
+      }); 
+     console.log('slide changed', swiper.activeIndex);
+     if (index == 0) {
+      current_layer = new TileLayer({
+        url: "https://portal1-geo.sabu.mtu.edu/server/rest/services/Hosted/mtu1955/MapServer"
+      });
+
+      setFeatureLayerFilter("map_year = '1955'");
+
+      map.add(current_layer);
+      
+     } else if ( index == 1) {
+      setFeatureLayerFilter("map_year = '1965'");
+      current_layer = new TileLayer({
+      url: "https://portal1-geo.sabu.mtu.edu/server/rest/services/Hosted/mtu1965/MapServer"
+      });
+      console.log("index1");
+      map.add(current_layer);
+     }
+     // push the current layer to the back
+     map.reorder(photos_layer, 0);  
+     map.reorder(current_layer, 0);
+  });
 });
 </script>
 </html>
