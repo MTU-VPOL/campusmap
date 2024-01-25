@@ -12,6 +12,7 @@
   <script src="https://code.jquery.com/jquery-3.5.1.js" integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc=" crossorigin="anonymous"></script>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"/>
   <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/openseadragon@4.1.0/build/openseadragon/openseadragon.min.js"></script>
   <script src="https://js.arcgis.com/4.28/"></script>
 
   <script>
@@ -118,6 +119,7 @@
 </ion-card>
 </div>
     <div class="swiper-slide">
+      <div id='openseadragon1' style='width: 800px; height: 600px;'></div>
       <ion-card>
         <img alt="Silhouette of mountains" style="width: 500px; height: 200px;" src="https://cchi.mtu.edu/system/files/styles/archives_watermark_test/private/d3b52f52-ce73-4475-812f-684f45cc54d5?itok=UNgJP5PY" />
   <ion-card-header>
@@ -149,6 +151,16 @@
 </body>
 <script>
 
+   const viewer = OpenSeadragon({
+        id: "openseadragon1",
+        prefixUrl: "https://cdn.jsdelivr.net/npm/openseadragon@2.4/build/openseadragon/images/",
+        tileSources: {
+          type: "image",
+          url: "https://cchi-iif.mtu.edu/iiif/3/cal1913.tiff/full/max/0/default.jpg"
+        }
+    });
+
+
     <!-- Initialize Swiper -->
     var swiper = new Swiper(".mySwiper", {
       slidesPerView: "auto",
@@ -163,7 +175,20 @@
       },
     });
 
+
   require(["esri/Map", "esri/views/MapView", "esri/layers/TileLayer", "esri/layers/FeatureLayer"], (Map, MapView, TileLayer, FeatureLayer) => {
+
+   
+
+    // Define a pop-up for Trailheads
+      const popupPhotos = {
+        "title": "Image",
+        "content": "<b>Title:</b> {Title}<br><b>City:</b> {CITY_JUR}<br><b>Cross Street:</b> {X_STREET}<br><b>Parking:</b> {PARKING}<br><b>Elevation:</b> {ELEV_FT} ft"
+        
+      }
+
+
+
     // tile layer that is currently visible on the map  
     let current_layer; 
 
@@ -190,7 +215,9 @@
     // this is the campus map layer visible on app load
     photos_layer = new FeatureLayer({
       url: "https://services2.arcgis.com/RPhrOu9XQzI31xTa/arcgis/rest/services/Historic_Campus_Photographs/FeatureServer/0",
-      renderer: renderer // specify the render created above
+      renderer: renderer, // specify the render created above
+      outFields: ["*"],
+      popupTemplate: popupPhotos
     }); 
 
     // Create the Map
@@ -205,7 +232,7 @@
       zoom: 15,
       container: "viewDiv",
       map: map
-    });
+    });    
 
     // Removes the zoom widget from the view
     view.ui.remove("zoom"); 
