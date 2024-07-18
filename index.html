@@ -4,7 +4,7 @@
    <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#285756" >
-    <title>KeTT Mobile Storytelling</title>
+    <title>MTU Campus History App Demo</title>
   <script type="module" src="https://cdn.jsdelivr.net/npm/@ionic/core/dist/ionic/ionic.esm.js"></script>
   <script nomodule src="https://cdn.jsdelivr.net/npm/@ionic/core/dist/ionic/ionic.js"></script>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@ionic/core/css/ionic.bundle.css" />
@@ -28,25 +28,24 @@
     #viewDiv {
       text-align: center;
       height: 100%;
-      width: 100%;
-           
+      width: 100%;           
     }
+
     ion-range {
       position: absolute;
       top: 5px;
       left: 10%;
       width:70%;
         --knob-box-shadow:  0 3px 1px rgba(0, 0, 0, 0.1), 0 4px 8px rgba(0, 0, 0, 0.13), 0 0 0 1px rgba(0, 0, 0, 0.02);
-        --bar-background: #83A1A0;
+        --bar-background: black;
         --bar-background-active: #d7d8da;
         --bar-height: 8px;
         --bar-border-radius: 8px;
         --knob-background: #ffffff;
-        --knob-size: 40px;
+        --knob-size: 30px;
         --pin-background: #ffafcc;
         --pin-color: #fff; 
-    }
-  
+    }  
 
     swiper {
       width: 100%;
@@ -80,6 +79,13 @@
     .swiper-slide:nth-child(3n) {
       width: 40%;
     }
+
+   .esri-ui .esri-popup  {
+     display:  none !important;
+   }  
+
+
+
 </style>
 
 <body>
@@ -92,7 +98,58 @@
     <ion-title>MTU Campus History Project Demo</ion-title>
   </ion-toolbar>
 </ion-header>
-<ion-content>  
+<ion-content> 
+    <ion-modal id="popupModal">
+    <ion-header>
+      <ion-toolbar>
+        <ion-buttons slot="end">
+          <ion-button onclick="cancel()" id="modalclose">CLOSE</ion-button>
+        </ion-buttons>
+        <ion-title><div id="modaltitle"></div></ion-title>       
+      </ion-toolbar>
+    </ion-header>
+    <ion-content class="ion-padding">
+      <ion-item>
+        <div id='openseadragon1' style='width: 800px; height: 600px;'></div>
+      </ion-item>
+     
+        <ion-item detail="true">
+  <ion-label>
+    <h3>Title</h3>
+    <p><div id="phototitle"></div></p>
+  </ion-label>
+</ion-item>
+
+<ion-item button>
+  <ion-label>
+    <h3>Location</h3>
+    <p>Library of Congress</p>
+  </ion-label>
+</ion-item>
+
+<ion-item button detail="true">
+  <ion-label>
+    <h3>Description</h3>
+    <p><div id="desc"></div></p>
+  </ion-label>
+</ion-item>
+
+<ion-item button detail="false">
+  <ion-label>
+    <h3>Date</h3>
+    <p><div id="date"></div></p>
+  </ion-label>
+</ion-item>
+
+<ion-item button detail="true" detail-icon="caret-forward-outline">
+  <ion-label>
+    <h3>Collection</h3>
+    <p><div id="collection"></div></p>    
+  </ion-label>
+</ion-item>
+      
+    </ion-content>
+  </ion-modal> 
   <ion-range value="100"></ion-range>
   <div id="viewDiv"></div>
 </ion-content>
@@ -110,25 +167,25 @@
       <ion-card>
         <img alt="Silhouette of mountains" style="width: 500px; height: 200px;" src="https://cchi.mtu.edu/system/files/styles/archives_watermark_test/private/d3b52f52-ce73-4475-812f-684f45cc54d5?itok=UNgJP5PY" />
         <ion-card-header>
-          <ion-card-title>1954</ion-card-title>
+          <ion-card-title>1908</ion-card-title>
           <ion-card-subtitle>MTU CAMPUS</ion-card-subtitle>
         </ion-card-header>
   <ion-card-content>
-    Here's a small text description for how the MTU Campus changed in 1954.
+    Here's a small text description for how the MTU Campus changed in 1908.
   </ion-card-content>
 </ion-card>
 </div>
     <div class="swiper-slide">
-      <div id='openseadragon1' style='width: 800px; height: 600px;'></div>
+      
       <ion-card>
         <img alt="Silhouette of mountains" style="width: 500px; height: 200px;" src="https://cchi.mtu.edu/system/files/styles/archives_watermark_test/private/d3b52f52-ce73-4475-812f-684f45cc54d5?itok=UNgJP5PY" />
   <ion-card-header>
-    <ion-card-title>1965</ion-card-title>
+    <ion-card-title>1949</ion-card-title>
     <ion-card-subtitle>MTU Campus</ion-card-subtitle>
   </ion-card-header>
 
   <ion-card-content>
-    Here's a small text description for how the MTU Campus changed in 1965.
+    Here's a small text description for how the MTU Campus changed in 1949.
   </ion-card-content>
 </ion-card>
     </div>
@@ -151,12 +208,18 @@
 </body>
 <script>
 
+   var modal = document.querySelector('ion-modal');   
+
+   $( "#modalclose" ).click(function() {
+        modal.isOpen = false;
+       });
+
    const viewer = OpenSeadragon({
         id: "openseadragon1",
         prefixUrl: "https://cdn.jsdelivr.net/npm/openseadragon@2.4/build/openseadragon/images/",
         tileSources: {
           type: "image",
-          url: "https://cchi-iif.mtu.edu/iiif/3/calhec.jpg/full/max/0/default.jpg"
+          url: "https://cchi-iif.mtu.edu/iiif/3/campus.tif/full/max/0/default.jpg"
         }
     });
 
@@ -176,7 +239,7 @@
     });
 
 
-  require(["esri/Map", "esri/views/MapView", "esri/layers/TileLayer", "esri/layers/FeatureLayer"], (Map, MapView, TileLayer, FeatureLayer) => {
+  require(["esri/Map", "esri/views/MapView", "esri/layers/TileLayer", "esri/layers/FeatureLayer", "esri/core/reactiveUtils"], (Map, MapView, TileLayer, FeatureLayer, reactiveUtils) => {
 
    
 
@@ -186,8 +249,6 @@
         "content": "<b>Title:</b> {Title}<br><b>City:</b> {CITY_JUR}<br><b>Cross Street:</b> {X_STREET}<br><b>Parking:</b> {PARKING}<br><b>Elevation:</b> {ELEV_FT} ft"
         
       }
-
-
 
     // tile layer that is currently visible on the map  
     let current_layer; 
@@ -209,7 +270,7 @@
       
     // this is the campus map layer visible on app load
     current_layer = new TileLayer({
-      url: "https://portal1-geo.sabu.mtu.edu/server/rest/services/Hosted/mtu1955/MapServer"
+      url: "https://portal1-geo.sabu.mtu.edu:6443/arcgis/rest/services/KeweenawHSDI/KeTT_1908_FIPS/MapServer"
     }); 
 
     // this is the campus map layer visible on app load
@@ -217,6 +278,7 @@
       url: "https://services2.arcgis.com/RPhrOu9XQzI31xTa/arcgis/rest/services/Historic_Campus_Photographs/FeatureServer/0",
       renderer: renderer, // specify the render created above
       outFields: ["*"],
+      popUpEnabled: true,
       popupTemplate: popupPhotos
     }); 
 
@@ -262,7 +324,7 @@
      console.log('slide changed', swiper.activeIndex);
      if (index == 0) {
       current_layer = new TileLayer({
-        url: "https://portal1-geo.sabu.mtu.edu/server/rest/services/Hosted/mtu1955/MapServer"
+        url: "https://portal1-geo.sabu.mtu.edu:6443/arcgis/rest/services/KeweenawHSDI/KeTT_1908_FIPS/MapServer"
       });
 
       setFeatureLayerFilter("map_year = '1955'");
@@ -272,7 +334,7 @@
      } else if ( index == 1) {
       setFeatureLayerFilter("map_year = '1965'");
       current_layer = new TileLayer({
-      url: "https://portal1-geo.sabu.mtu.edu/server/rest/services/Hosted/mtu1965/MapServer"
+      url: "https://portal1-geo.sabu.mtu.edu:6443/arcgis/rest/services/KeweenawHSDI/Kett_19496_FIPS/MapServer"
       });
       console.log("index1");
       map.add(current_layer);
@@ -280,6 +342,29 @@
      // push the current layer to the back
      map.reorder(photos_layer, 0);  
      map.reorder(current_layer, 0);
+  });
+
+ // Watch for a click on the Photolayer 
+ reactiveUtils.watch(
+  () => view.popup.selectedFeature,
+  (graphic) => {
+    if (graphic) {
+      console.log(graphic);
+      const title = graphic.attributes.Title;
+      const desc = graphic.attributes.Description;
+      const collection = graphic.attributes.Collection;
+      const photographer = graphic.attributes.Photographer;
+      const date = graphic.attributes.photo_date;
+      const location = graphic.attributes.Location; 
+      $('#phototitle').html("Academic Office Building");
+      $('#modaltitle').html("Academic Office Building");
+      $('#desc').html("Example photo of the AOB from the Library of Congress.");
+      $('#collection').html("collection");
+      $('#date').html(date);
+      $('#location').html("Library of Congress");
+
+      modal.isOpen = true;
+    }
   });
 });
 </script>
